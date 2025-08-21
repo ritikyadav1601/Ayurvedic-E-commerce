@@ -19,7 +19,6 @@ const Header = () => {
           <Link href='/products' className='hover:text-[#C99A3D] transition-colors'>Products</Link>
           <Link href='/about' className='hover:text-[#C99A3D] transition-colors'>About</Link>
           <Link href='/contact' className='hover:text-[#C99A3D] transition-colors'>Contact</Link>
-          <Link href='/blog' className='hover:text-[#C99A3D] transition-colors'>Blog</Link>
         </nav>
 
         {/* Desktop Buttons */}

@@ -47,13 +47,13 @@ const BlogSection: FC = () => {
           <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden">
             <div className='relative w-full h-52'>
               <Image
-              src={blog.image}
-              alt={blog.title}
-              fill
-              className="object-cover"
-            />
+                src={blog.image}
+                alt={blog.title}
+                fill
+                className="object-cover"
+              />
             </div>
-            
+
             <div className="p-5">
               <h3 className="text-sm md:text-xl font-playfair text-[#C99A3D] mb-2">{blog.title}</h3>
               <p className="text-[10px] md:text-sm font-inter text-[#5D623C] mb-4">
@@ -68,6 +68,11 @@ const BlogSection: FC = () => {
           </div>
         ))}
       </div>
+      <div className="text-center mt-10">
+        <Link href="/blogs" className="bg-[#C99A3D] text-white px-7 py-3 rounded-lg font-inter text-sm md:text-base">
+          Explore All Blogs
+        </Link>
+        </div>
     </div>
   )
 }
