@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ChevronLeft,
   Heart,
@@ -91,23 +91,39 @@ const getProductById = (id: number): Product => {
   return products[id] || products[1];
 };
 
-// ✅ Type for page props (Next.js 13 App Router)
+// ✅ Updated type for page props (Next.js 15)
 interface ProductDetailsPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default function ProductDetailsPage({ params }: ProductDetailsPageProps) {
-  const productId = Number(params?.id) || 1;
-  const product = getProductById(productId);
-
+  const [productId, setProductId] = useState<number>(1);
+  const [product, setProduct] = useState<Product | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<
     "description" | "ingredients" | "benefits" | "usage" | "specifications"
   >("description");
   const [isFavorite, setIsFavorite] = useState(false);
+
+  // ✅ Handle async params
+  useEffect(() => {
+    const loadProduct = async () => {
+      try {
+        const resolvedParams = await params;
+        const id = Number(resolvedParams?.id) || 1;
+        setProductId(id);
+        setProduct(getProductById(id));
+      } catch (error) {
+        console.error("Error loading product:", error);
+        setProduct(getProductById(1));
+      }
+    };
+
+    loadProduct();
+  }, [params]);
 
   const handleQuantityChange = (action: "increase" | "decrease") => {
     if (action === "increase") {
@@ -124,6 +140,15 @@ export default function ProductDetailsPage({ params }: ProductDetailsPageProps) 
     { id: "usage", label: "How to Use" },
     { id: "specifications", label: "Specifications" },
   ] as const;
+
+  // Show loading state while product is being fetched
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-[#F9F6F1] flex items-center justify-center">
+        <div className="text-[#5D623C] text-lg">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#F9F6F1]">
