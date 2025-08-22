@@ -21,13 +21,13 @@ const FeaturedProducts = () => {
 
       <div className="grid grid-cols-2  md:grid-cols-4 gap-8">
         {products.map((product, index) => (
-          <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden">
+          <div key={index} className="group bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-transform duration-100">
             <div className='relative w-full h-48 md:h-60'>
               <Image
               src={product.image}
               alt={product.name}
               fill
-              className="object-cover"
+              className="object-cover group-hover:scale-110 transition-transform duration-300 "
             />
             </div>
             

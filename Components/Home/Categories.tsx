@@ -27,13 +27,13 @@ const CategoryPage = () => {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
         {categories.map((category, index) => (
-          <div key={index} className="bg-white shadow-md rounded-lg overflow-hidden">
+          <div key={index} className=" group bg-white shadow-md rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
             <div className='relative w-full h-48 md:h-60'>
               <Image 
               src={category.image} 
               alt={category.name} 
               fill
-              className="object-cover"
+              className="object-cover transition-transform duration-300 md:group-hover:scale-110"
             />
             </div>
             

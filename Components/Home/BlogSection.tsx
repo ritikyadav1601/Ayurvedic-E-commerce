@@ -44,13 +44,13 @@ const BlogSection: FC = () => {
 
       <div className="max-w-6xl mx-auto grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-8">
         {blogs.map((blog, index) => (
-          <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden">
+          <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden group hover:shadow-xl transition-transform duration-300" >
             <div className='relative w-full h-52'>
               <Image
                 src={blog.image}
                 alt={blog.title}
                 fill
-                className="object-cover"
+                className="object-cover group-hover:scale-110 transition-transform duration-300 rounded-t-lg"
               />
             </div>
 
