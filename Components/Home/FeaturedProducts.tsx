@@ -19,7 +19,7 @@ const FeaturedProducts = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-2  md:grid-cols-4 gap-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {products.map((product, index) => (
           <div key={index} className="group bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-transform duration-100">
             <div className='relative w-full h-48 md:h-60'>

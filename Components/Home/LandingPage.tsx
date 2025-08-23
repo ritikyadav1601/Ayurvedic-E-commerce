@@ -13,7 +13,7 @@ const LandingPage = () => {
         priority
       />
 
-      <div className='absolute top-20 left-10 md:top-35 md:left-30 z-50 md:w-180 w-50'>
+      <div className='absolute top-20 left-10 md:top-35 md:left-15 lg:left-30 z-50 md:w-180 w-50'>
         <div className='text-xl  md:text-7xl font-playfair text-[#C99A3D]  '>Rediscover Health with Ayurveda</div>
         <div className='text-md md:text-2xl font-inter text-[#5C6B57] md:my-5 my-2'>Ancient healing for today’s lifestyle</div> 
         <div className='flex flex-col md:flex-row gap-2 md:gap-4 md:mt-5'> 

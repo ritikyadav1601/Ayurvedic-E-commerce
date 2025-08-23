@@ -179,7 +179,7 @@ export default function ProductDetailsPage({ params }: ProductDetailsPageProps) 
       </div>
 
       {/* Product Info & Images */}
-      <div className="px-6 md:px-12 lg:px-20 pb-16">
+      <div className="px-2 md:px-12 lg:px-20 pb-16">
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Left: Product Images */}
           <div className="space-y-4">
@@ -223,20 +223,20 @@ export default function ProductDetailsPage({ params }: ProductDetailsPageProps) 
             {/* Category + Stock */}
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm text-[#C99A3D] font-inter bg-[#C99A3D]/10 px-2 py-1 rounded">
+                <span className="text-xs md:text-sm text-[#C99A3D] font-inter bg-[#C99A3D]/10 px-2 py-1 rounded">
                   {product.category}
                 </span>
                 {product.inStock && (
-                  <span className="text-sm text-green-600 font-inter bg-green-100 px-2 py-1 rounded">
+                  <span className="text-xs md:text-sm text-green-600 font-inter bg-green-100 px-2 py-1 rounded">
                     In Stock
                   </span>
                 )}
               </div>
 
-              <h1 className="text-3xl md:text-4xl font-playfair text-[#5D623C] mb-3">
+              <h1 className="text-2xl md:text-4xl font-playfair text-[#5D623C] mb-3">
                 {product.name}
               </h1>
-              <p className="text-[#777] font-inter text-lg leading-relaxed">
+              <p className="text-[#777] font-inter text-sm md:text-lg leading-relaxed">
                 {product.description}
               </p>
             </div>
@@ -247,7 +247,7 @@ export default function ProductDetailsPage({ params }: ProductDetailsPageProps) 
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    size={20}
+                    size={15}
                     className={`${
                       i < Math.floor(product.rating)
                         ? "text-yellow-400 fill-current"
@@ -256,19 +256,19 @@ export default function ProductDetailsPage({ params }: ProductDetailsPageProps) 
                   />
                 ))}
               </div>
-              <span className="text-[#5D623C] font-semibold">
+              <span className="text-[#5D623C] font-semibold text-sm md:text-[16px]">
                 {product.rating}
               </span>
-              <span className="text-[#777]">({product.reviews} reviews)</span>
+              <span className="text-[#777] text-sm md:text-[16px]">({product.reviews} reviews)</span>
             </div>
 
             {/* 💰 Price */}
             <div className="flex items-center gap-3">
-              <span className="text-3xl font-bold text-[#C99A3D]">
+              <span className="text-xl md:text-3xl font-bold text-[#C99A3D]">
                 {product.price}
               </span>
               {product.originalPrice && (
-                <span className="text-xl text-gray-500 line-through">
+                <span className="text-sm md:text-xl text-gray-500 line-through">
                   {product.originalPrice}
                 </span>
               )}
@@ -278,7 +278,7 @@ export default function ProductDetailsPage({ params }: ProductDetailsPageProps) 
             <div className="space-y-4">
               {/* Quantity Selector */}
               <div className="flex items-center gap-4">
-                <span className="text-[#5D623C] font-semibold">Quantity:</span>
+                <span className="text-[#5D623C] font-semibold text-sm md:text-[16px]">Quantity:</span>
                 <div className="flex items-center border border-gray-300 rounded-lg">
                   <button
                     onClick={() => handleQuantityChange("decrease")}
@@ -343,7 +343,7 @@ export default function ProductDetailsPage({ params }: ProductDetailsPageProps) 
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`pb-4 px-1 font-inter font-semibold whitespace-nowrap transition-colors ${
+                  className={`pb-4 px-1 font-inter font-semibold whitespace-nowrap transition-colors text-sm md:text-[16px] ${
                     activeTab === tab.id
                       ? "text-[#C99A3D] border-b-2 border-[#C99A3D]"
                       : "text-[#777] hover:text-[#5D623C]"
@@ -357,14 +357,14 @@ export default function ProductDetailsPage({ params }: ProductDetailsPageProps) 
 
           <div className="max-w-4xl">
             {activeTab === "description" && (
-              <p className="text-[#777] font-inter text-lg leading-relaxed">
+              <p className="text-[#777] font-inter text-sm md:text-lg leading-relaxed">
                 {product.fullDescription}
               </p>
             )}
 
             {activeTab === "ingredients" && (
               <div>
-                <h3 className="text-xl font-playfair text-[#5D623C] mb-4">
+                <h3 className="text-sm md:text-xl font-playfair text-[#5D623C] mb-4">
                   Natural Ingredients
                 </h3>
                 <div className="grid md:grid-cols-2 gap-3">
@@ -374,7 +374,7 @@ export default function ProductDetailsPage({ params }: ProductDetailsPageProps) 
                       className="flex items-center gap-2 p-3 bg-white rounded-lg"
                     >
                       <div className="w-2 h-2 bg-[#C99A3D] rounded-full"></div>
-                      <span className="font-inter text-[#5D623C]">
+                      <span className="font-inter text-[#5D623C] text-xs md:text-[16px]">
                         {ingredient}
                       </span>
                     </div>
@@ -385,19 +385,19 @@ export default function ProductDetailsPage({ params }: ProductDetailsPageProps) 
 
             {activeTab === "benefits" && (
               <div>
-                <h3 className="text-xl font-playfair text-[#5D623C] mb-4">
+                <h3 className="text-sm md:text-xl font-playfair text-[#5D623C] mb-4">
                   Key Benefits
                 </h3>
                 <div className="space-y-3">
                   {product.benefits.map((benefit, index) => (
                     <div
                       key={index}
-                      className="flex items-start gap-3 p-4 bg-white rounded-lg"
+                      className="flex items-start gap-3 p-3 md:p-4 bg-white rounded-lg"
                     >
-                      <div className="w-6 h-6 bg-[#C99A3D] text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 mt-0.5">
+                      <div className="w-4 h-4 md:w-6 md:h-6 bg-[#C99A3D] text-xs md:text-sm text-white rounded-full flex items-center justify-center font-bold flex-shrink-0 mt-0.5">
                         {index + 1}
                       </div>
-                      <span className="font-inter text-[#5D623C]">
+                      <span className="font-inter text-[#5D623C] text-xs md:text-[16px]">
                         {benefit}
                       </span>
                     </div>
@@ -408,19 +408,19 @@ export default function ProductDetailsPage({ params }: ProductDetailsPageProps) 
 
             {activeTab === "usage" && (
               <div>
-                <h3 className="text-xl font-playfair text-[#5D623C] mb-4">
+                <h3 className="text-sm md:text-xl font-playfair text-[#5D623C] mb-4">
                   How to Use
                 </h3>
                 <div className="space-y-4">
                   {product.howToUse.map((step, index) => (
                     <div
                       key={index}
-                      className="flex gap-4 p-4 bg-white rounded-lg"
+                      className="flex gap-4 p-3 md:p-4 bg-white rounded-lg"
                     >
-                      <div className="w-8 h-8 bg-[#C99A3D] text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      <div className="w-4 h-4 md:w-6 md:h-6 bg-[#C99A3D] text-white rounded-full flex items-center justify-center text-xs md:text-sm font-bold flex-shrink-0">
                         {index + 1}
                       </div>
-                      <p className="font-inter text-[#5D623C]">{step}</p>
+                      <p className="font-inter text-[#5D623C] text-xs md:text-[16px]">{step}</p>
                     </div>
                   ))}
                 </div>
@@ -429,7 +429,7 @@ export default function ProductDetailsPage({ params }: ProductDetailsPageProps) 
 
             {activeTab === "specifications" && (
               <div>
-                <h3 className="text-xl font-playfair text-[#5D623C] mb-4">
+                <h3 className="text-sm md:text-xl font-playfair text-[#5D623C] mb-4">
                   Product Specifications
                 </h3>
                 <div className="bg-white rounded-lg overflow-hidden">
@@ -437,14 +437,14 @@ export default function ProductDetailsPage({ params }: ProductDetailsPageProps) 
                     ([key, value], index) => (
                       <div
                         key={index}
-                        className={`flex p-4 ${
+                        className={`flex md:p-4 p-3 ${
                           index % 2 === 0 ? "bg-gray-50" : "bg-white"
                         }`}
                       >
-                        <div className="w-1/3 font-semibold text-[#5D623C] font-inter">
+                        <div className="w-1/3 font-semibold text-[#5D623C] font-inter text-xs md:text-[16px]">
                           {key}:
                         </div>
-                        <div className="w-2/3 text-[#777] font-inter">
+                        <div className="w-2/3 text-[#777] font-inter text-xs md:text-[16px]">
                           {value}
                         </div>
                       </div>

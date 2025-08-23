@@ -25,7 +25,7 @@ const CategoryPage = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {categories.map((category, index) => (
           <div key={index} className=" group bg-white shadow-md rounded-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
             <div className='relative w-full h-48 md:h-60'>
