@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useCart, parsePriceToNumber } from "../../context/CartContext";
+import { useRouter } from "next/navigation";
 import {
   ChevronLeft,
   Heart,
@@ -11,6 +13,7 @@ import {
   Minus,
   Plus,
   ShoppingCart,
+  ChevronRight,
 } from "lucide-react";
 
 // ✅ Define types
@@ -33,62 +36,302 @@ interface Product {
   specifications: Record<string, string>;
 }
 
+// ✅ Sample products data
+const productsDatabase: Record<number, Product> = {
+  1: {
+    id: 1,
+    name: "Ayurvedic Hair Oil",
+    description:
+      "Nourishes scalp & strengthens hair roots with natural herbs and essential oils.",
+    fullDescription:
+      "Our premium Ayurvedic Hair Oil is crafted using ancient Ayurvedic formulations that have been trusted for centuries. This powerful blend of natural herbs and essential oils penetrates deep into the scalp to nourish hair follicles, strengthen roots, and promote healthy hair growth. Regular use helps reduce hair fall, prevents premature graying, and adds natural shine to your hair.",
+    price: "₹299",
+    originalPrice: "₹399",
+    discount: "25% OFF",
+    images: [
+      "/product.jpg",
+      "/product2.jpg",
+      "/product3.jpg",
+      "/product4.jpg",
+    ],
+    rating: 4.5,
+    reviews: 127,
+    inStock: true,
+    category: "Hair Care",
+    ingredients: [
+      "Coconut Oil",
+      "Brahmi",
+      "Bhringraj",
+      "Amla",
+      "Fenugreek",
+      "Rosemary Oil",
+    ],
+    benefits: [
+      "Reduces hair fall by up to 80%",
+      "Promotes new hair growth",
+      "Prevents premature graying",
+      "Adds natural shine and softness",
+      "Strengthens hair roots",
+      "Improves scalp circulation",
+    ],
+    howToUse: [
+      "Apply oil to scalp and hair roots",
+      "Gently massage for 5-10 minutes",
+      "Leave for 30 minutes or overnight",
+      "Wash with mild shampoo",
+      "Use 2-3 times per week for best results",
+    ],
+    specifications: {
+      "Net Weight": "100ml",
+      "Shelf Life": "24 months",
+      "Suitable For": "All hair types",
+      Packaging: "Glass bottle with dropper",
+    },
+  },
+  2: {
+    id: 2,
+    name: "Herbal Hair Shampoo",
+    description:
+      "Gentle cleansing shampoo with natural herbs for healthy, lustrous hair.",
+    fullDescription:
+      "This gentle herbal shampoo is formulated with carefully selected natural ingredients that cleanse your hair without stripping away its natural oils. Enriched with traditional Ayurvedic herbs, it promotes scalp health and leaves your hair soft, manageable, and naturally shiny.",
+    price: "₹249",
+    originalPrice: "₹329",
+    discount: "24% OFF",
+    images: ["/product2.jpg", "/product.jpg", "/product3.jpg"],
+    rating: 4.3,
+    reviews: 89,
+    inStock: true,
+    category: "Hair Care",
+    ingredients: ["Shikakai", "Reetha", "Amla", "Neem", "Aloe Vera"],
+    benefits: [
+      "Gentle cleansing without chemicals",
+      "Maintains natural hair moisture",
+      "Reduces dandruff and scalp irritation",
+      "Adds natural shine",
+      "Safe for daily use",
+    ],
+    howToUse: [
+      "Wet hair thoroughly",
+      "Apply shampoo and massage gently",
+      "Rinse thoroughly with water",
+      "Repeat if necessary",
+    ],
+    specifications: {
+      "Net Weight": "200ml",
+      "Shelf Life": "18 months",
+      "Suitable For": "All hair types",
+      Packaging: "Plastic bottle",
+    },
+  },
+  3: {
+    id: 3,
+    name: "Ayurvedic Face Cream",
+    description:
+      "Nourishing face cream with turmeric and sandalwood for radiant skin.",
+    fullDescription:
+      "This luxurious Ayurvedic face cream combines the power of turmeric, sandalwood, and other precious herbs to give you naturally radiant and healthy skin. It deeply moisturizes, reduces signs of aging, and protects against environmental damage.",
+    price: "₹399",
+    originalPrice: "₹549",
+    discount: "27% OFF",
+    images: ["/product3.jpg", "/product.jpg", "/product2.jpg"],
+    rating: 4.6,
+    reviews: 156,
+    inStock: true,
+    category: "Skin Care",
+    ingredients: ["Turmeric", "Sandalwood", "Rose Water", "Almond Oil", "Saffron"],
+    benefits: [
+      "Deep moisturization",
+      "Reduces fine lines and wrinkles",
+      "Natural glow enhancement",
+      "Evens skin tone",
+      "Anti-aging properties",
+    ],
+    howToUse: [
+      "Cleanse face thoroughly",
+      "Apply small amount to face and neck",
+      "Massage gently in circular motions",
+      "Use twice daily for best results",
+    ],
+    specifications: {
+      "Net Weight": "50ml",
+      "Shelf Life": "24 months",
+      "Suitable For": "All skin types",
+      Packaging: "Glass jar",
+    },
+  },
+  4: {
+    id: 4,
+    name: "Herbal Hair Mask",
+    description:
+      "Deep conditioning hair mask with hibiscus and curry leaves for damaged hair.",
+    fullDescription:
+      "This intensive herbal hair mask is specially formulated to repair and rejuvenate damaged hair. Packed with hibiscus, curry leaves, and other nourishing herbs, it provides deep conditioning, repairs split ends, and restores hair's natural strength and vitality.",
+    price: "₹349",
+    originalPrice: "₹449",
+    discount: "22% OFF",
+    images: ["/product4.jpg", "/product.jpg", "/product2.jpg"],
+    rating: 4.4,
+    reviews: 78,
+    inStock: true,
+    category: "Hair Care",
+    ingredients: ["Hibiscus", "Curry Leaves", "Coconut Oil", "Honey", "Yogurt"],
+    benefits: [
+      "Repairs damaged hair",
+      "Deep conditioning treatment",
+      "Reduces split ends",
+      "Adds volume and thickness",
+      "Restores natural shine",
+    ],
+    howToUse: [
+      "Apply to clean, damp hair",
+      "Leave on for 20-30 minutes",
+      "Rinse thoroughly with lukewarm water",
+      "Use once a week",
+    ],
+    specifications: {
+      "Net Weight": "150ml",
+      "Shelf Life": "12 months",
+      "Suitable For": "Damaged hair",
+      Packaging: "Plastic tube",
+    },
+  },
+  5: {
+    id: 5,
+    name: "Natural Body Lotion",
+    description:
+      "Hydrating body lotion with coconut oil and shea butter for silky smooth skin.",
+    fullDescription:
+      "This rich and creamy body lotion is enriched with natural coconut oil and shea butter to provide long-lasting hydration. It absorbs quickly without leaving a greasy residue, leaving your skin feeling soft, smooth, and beautifully moisturized all day long.",
+    price: "₹329",
+    originalPrice: "₹429",
+    discount: "23% OFF",
+    images: ["/product.jpg", "/product2.jpg", "/product3.jpg"],
+    rating: 4.2,
+    reviews: 94,
+    inStock: true,
+    category: "Skin Care",
+    ingredients: ["Coconut Oil", "Shea Butter", "Aloe Vera", "Vitamin E", "Lavender Oil"],
+    benefits: [
+      "Long-lasting hydration",
+      "Quick absorption",
+      "Soothes dry skin",
+      "Non-greasy formula",
+      "Pleasant fragrance",
+    ],
+    howToUse: [
+      "Apply to clean, dry skin",
+      "Massage gently until absorbed",
+      "Use daily after shower",
+      "Focus on dry areas like elbows and knees",
+    ],
+    specifications: {
+      "Net Weight": "250ml",
+      "Shelf Life": "24 months",
+      "Suitable For": "All skin types",
+      Packaging: "Pump bottle",
+    },
+  },
+};
+
 // ✅ Sample product fetcher
 const getProductById = (id: number): Product => {
-  const products: Record<number, Product> = {
-    1: {
-      id: 1,
-      name: "Ayurvedic Hair Oil",
-      description:
-        "Nourishes scalp & strengthens hair roots with natural herbs and essential oils.",
-      fullDescription:
-        "Our premium Ayurvedic Hair Oil is crafted using ancient Ayurvedic formulations that have been trusted for centuries. This powerful blend of natural herbs and essential oils penetrates deep into the scalp to nourish hair follicles, strengthen roots, and promote healthy hair growth. Regular use helps reduce hair fall, prevents premature graying, and adds natural shine to your hair.",
-      price: "₹299",
-      originalPrice: "₹399",
-      discount: "25% OFF",
-      images: [
-        "/product.jpg",
-        "/product2.jpg",
-        "/product3.jpg",
-        "/product4.jpg",
-      ],
-      rating: 4.5,
-      reviews: 127,
-      inStock: true,
-      category: "Hair Care",
-      ingredients: [
-        "Coconut Oil",
-        "Brahmi",
-        "Bhringraj",
-        "Amla",
-        "Fenugreek",
-        "Rosemary Oil",
-      ],
-      benefits: [
-        "Reduces hair fall by up to 80%",
-        "Promotes new hair growth",
-        "Prevents premature graying",
-        "Adds natural shine and softness",
-        "Strengthens hair roots",
-        "Improves scalp circulation",
-      ],
-      howToUse: [
-        "Apply oil to scalp and hair roots",
-        "Gently massage for 5-10 minutes",
-        "Leave for 30 minutes or overnight",
-        "Wash with mild shampoo",
-        "Use 2-3 times per week for best results",
-      ],
-      specifications: {
-        "Net Weight": "100ml",
-        "Shelf Life": "24 months",
-        "Suitable For": "All hair types",
-        Packaging: "Glass bottle with dropper",
-      },
-    },
-  };
+  return productsDatabase[id] || productsDatabase[1];
+};
 
-  return products[id] || products[1];
+// ✅ Get related products based on category
+const getRelatedProducts = (currentProductId: number, category: string, limit: number = 4): Product[] => {
+  return Object.values(productsDatabase)
+    .filter(product => product.id !== currentProductId && product.category === category)
+    .slice(0, limit);
+};
+
+// ✅ Related Product Card Component 
+const RelatedProductCard = ({ product }: { product: Product }) => {
+  const { addItem } = useCart();
+  return (
+    <Link 
+      href={`/products/${product.id}`}
+      className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group"
+    >
+      <div className="relative aspect-square overflow-hidden">
+        <Image
+          src={product.images[0]}
+          alt={product.name}
+          fill
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+        {product.discount && (
+          <div className="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-semibold">
+            {product.discount}
+          </div>
+        )}
+        <button className="absolute top-3 right-3 p-2 bg-white/80 rounded-full hover:bg-white transition-colors">
+          <Heart size={16} className="text-gray-600 hover:text-red-500" />
+        </button>
+      </div>
+      
+      <div className="p-4 space-y-3">
+        <div>
+          <span className="text-[10px] text-[#C99A3D] font-inter bg-[#C99A3D]/10 px-2 py-1 rounded">
+            {product.category}
+          </span>
+        </div>
+        
+        <h3 className="font-playfair text-sm md:text-xl text-[#5D623C] group-hover:text-[#C99A3D] transition-colors line-clamp-2">
+          {product.name}
+        </h3>
+        
+        <p className="text-[10px] md:text-[16px] text-[#777] font-inter line-clamp-2">
+          {product.description}
+        </p>
+        
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
+                size={12}
+                className={`${
+                  i < Math.floor(product.rating)
+                    ? "text-yellow-400 fill-current"
+                    : "text-gray-300"
+                }`}
+              />
+            ))}
+          </div>
+          <span className="text-xs text-[#777]">({product.reviews})</span>
+        </div>
+        
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-lg font-bold text-[#C99A3D]">{product.price}</span>
+            {product.originalPrice && (
+              <span className="text-sm text-gray-500 line-through">
+                {product.originalPrice}
+              </span>
+            )}
+          </div>
+          
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              addItem({
+                id: product.id,
+                name: product.name,
+                price: parsePriceToNumber(product.price),
+                image: product.images[0],
+              }, 1);
+            }}
+            className="p-2 bg-[#C99A3D] text-white rounded-lg hover:bg-[#a87e2f] transition-colors"
+          >
+            <ShoppingCart size={16} />
+          </button>
+        </div>
+      </div>
+    </Link>
+  );
 };
 
 // ✅ Updated type for page props (Next.js 15)
@@ -99,8 +342,11 @@ interface ProductDetailsPageProps {
 }
 
 export default function ProductDetailsPage({ params }: ProductDetailsPageProps) {
+  const { addItem } = useCart();
+  const router = useRouter();
   const [productId, setProductId] = useState<number>(1);
   const [product, setProduct] = useState<Product | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<
@@ -115,10 +361,14 @@ export default function ProductDetailsPage({ params }: ProductDetailsPageProps) 
         const resolvedParams = await params;
         const id = Number(resolvedParams?.id) || 1;
         setProductId(id);
-        setProduct(getProductById(id));
+        const currentProduct = getProductById(id);
+        setProduct(currentProduct);
+        setRelatedProducts(getRelatedProducts(id, currentProduct.category));
       } catch (error) {
         console.error("Error loading product:", error);
-        setProduct(getProductById(1));
+        const fallbackProduct = getProductById(1);
+        setProduct(fallbackProduct);
+        setRelatedProducts(getRelatedProducts(1, fallbackProduct.category));
       }
     };
 
@@ -301,7 +551,21 @@ export default function ProductDetailsPage({ params }: ProductDetailsPageProps) 
 
               {/* Add to Cart / Favorite / Share */}
               <div className="flex gap-3">
-                <button className="flex-1 bg-[#C99A3D] text-white px-6 py-3 rounded-lg font-inter font-semibold hover:bg-[#a87e2f] transition-colors flex items-center justify-center gap-2">
+                <button
+                  onClick={() => {
+                    if (!product) return;
+                    addItem(
+                      {
+                        id: product.id,
+                        name: product.name,
+                        price: parsePriceToNumber(product.price),
+                        image: product.images[0],
+                      },
+                      quantity
+                    );
+                  }}
+                  className="flex-1 bg-[#C99A3D] text-white px-6 py-3 rounded-lg font-inter font-semibold hover:bg-[#a87e2f] transition-colors flex items-center justify-center gap-2"
+                >
                   <ShoppingCart size={20} />
                   Add to Cart
                 </button>
@@ -329,7 +593,22 @@ export default function ProductDetailsPage({ params }: ProductDetailsPageProps) 
             </div>
 
             {/* Buy Now */}
-            <button className="w-full bg-[#5D623C] text-white px-6 py-3 rounded-lg font-inter font-semibold hover:bg-[#4a5230] transition-colors">
+            <button
+              onClick={() => {
+                if (!product) return;
+                addItem(
+                  {
+                    id: product.id,
+                    name: product.name,
+                    price: parsePriceToNumber(product.price),
+                    image: product.images[0],
+                  },
+                  quantity
+                );
+                router.push("/checkout");
+              }}
+              className="w-full bg-[#5D623C] text-white px-6 py-3 rounded-lg font-inter font-semibold hover:bg-[#4a5230] transition-colors"
+            >
               Buy Now
             </button>
           </div>
@@ -455,6 +734,33 @@ export default function ProductDetailsPage({ params }: ProductDetailsPageProps) 
             )}
           </div>
         </div>
+
+        {/* Related Products Section */}
+        {relatedProducts.length > 0 && (
+          <div className="mt-20">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl md:text-3xl font-playfair text-[#5D623C]">
+                Related Products
+              </h2>
+              <Link 
+                href="/products"
+                className="inline-flex items-center gap-1 text-[#C99A3D] font-inter font-semibold hover:text-[#a87e2f] transition-colors text-sm md:text-base"
+              >
+                View All
+                <ChevronRight size={16} />
+              </Link>
+            </div>
+            
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+              {relatedProducts.map((relatedProduct) => (
+                <RelatedProductCard 
+                  key={relatedProduct.id} 
+                  product={relatedProduct} 
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
