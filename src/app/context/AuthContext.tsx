@@ -1,13 +1,11 @@
 "use client";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { api, setToken } from "@/lib/api";
 
 type SessionUser = {
   name: string;
   email: string;
-};
-
-type StoredUser = SessionUser & {
-  passwordHash: string;
+  role?: string;
 };
 
 type AuthContextValue = {
@@ -19,30 +17,6 @@ type AuthContextValue = {
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
-
-async function hashPassword(plain: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(plain);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-  return hashHex;
-}
-
-function readUsers(): StoredUser[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem("ae_users");
-    return raw ? (JSON.parse(raw) as StoredUser[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function writeUsers(users: StoredUser[]) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem("ae_users", JSON.stringify(users));
-}
 
 function readSession(): SessionUser | null {
   if (typeof window === "undefined") return null;
@@ -68,31 +42,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signup = useCallback(async (name: string, email: string, password: string) => {
-    const users = readUsers();
-    const exists = users.some((u) => u.email.toLowerCase() === email.toLowerCase());
-    if (exists) return { ok: false as const, error: "Email already in use" };
-    const passwordHash = await hashPassword(password);
-    const newUser: StoredUser = { name, email, passwordHash };
-    const updated = [...users, newUser];
-    writeUsers(updated);
-    const sessionUser: SessionUser = { name, email };
-    writeSession(sessionUser);
-    setUser(sessionUser);
-    return { ok: true as const };
+    try {
+      const res = await api.register({ name, email, password });
+      setToken(res.token);
+      const sessionUser: SessionUser = { name: res.user.name, email: res.user.email, role: res.user.role };
+      writeSession(sessionUser);
+      setUser(sessionUser);
+      return { ok: true as const };
+    } catch (e: any) {
+      return { ok: false as const, error: e.message || "Signup failed" };
+    }
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const users = readUsers();
-    const passwordHash = await hashPassword(password);
-    const found = users.find((u) => u.email.toLowerCase() === email.toLowerCase() && u.passwordHash === passwordHash);
-    if (!found) return { ok: false as const, error: "Invalid credentials" };
-    const sessionUser: SessionUser = { name: found.name, email: found.email };
-    writeSession(sessionUser);
-    setUser(sessionUser);
-    return { ok: true as const };
+    try {
+      const res = await api.login({ email, password });
+      setToken(res.token);
+      const sessionUser: SessionUser = { name: res.user.name, email: res.user.email, role: res.user.role };
+      writeSession(sessionUser);
+      setUser(sessionUser);
+      return { ok: true as const };
+    } catch (e: any) {
+      return { ok: false as const, error: e.message || "Login failed" };
+    }
   }, []);
 
   const logout = useCallback(() => {
+    setToken(null);
     writeSession(null);
     setUser(null);
   }, []);

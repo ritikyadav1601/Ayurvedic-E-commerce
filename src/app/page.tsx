@@ -1,5 +1,3 @@
-import Footer from "../../Components/HeaderFooter/Footer";
-import Header from "../../Components/HeaderFooter/Header";
 import BlogSection from "../../Components/Home/BlogSection";
 import CategoryPage from "../../Components/Home/Categories";
 import CTABanner from "../../Components/Home/CTABanner";
